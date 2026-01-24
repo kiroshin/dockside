@@ -1,0 +1,20 @@
+services:
+    ssh:
+        # 현재 폴더 도커파일 읽어와
+        build: .
+        # 빌드할 이미지 이름
+        image: ssh-ubuntu:24.04
+        # 컨테이너 이름
+        container_name: compiler
+        # 재부팅 해도 중지되지 않게
+        restart: unless-stopped
+        # 필수: 컨테이너 유지를 위해 표준입력 열어둬
+        stdin_open: true
+        # 필수: 가상터미널(tty) 할당으로 컨테이너 종료 방지
+        tty: true
+        # tcp 머신포트:도커포트 연결
+        ports:
+            - "5022:22"
+        # 머신폴더(이미 존재함)를 컨테이너에 마운트
+        volumes:
+            - /srv/compiler:/srv
