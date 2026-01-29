@@ -47,12 +47,14 @@ $ docker rm -f temp_db
 | min_wal_size         | 80MB  | 128MB  | 256MB  | 512MB | 1GB   | 2GB   | 4GB   | 로그 캐시:  |
 | max_connections      | 20    | 40     | 60     | 100   | 200   | 300   | 500   | 최대 접속 커넥션 |
 |                      | 50명   | 80명   | 100명   | 200명  | 500명 | 1,000명 | 2,000명 | 대략적인 최대 유저 규모 |
-| max_parallel_workers_per_gather | 0   | 1   | 2   | 2   | 4   | 4   | 8   | 하나의 쿼리를 처리할 때 추가로 작업시킬 코어. 0 이면 싱글 |
+| max_worker_processes            | 2   | 4   | 4   | 8   | 8   | 12  | 16  | (CPU 코어의 2배) 시스템 전체의 DB 총 프로세스 |
+| max_parallel_workers            | 0   | 2   | 2   | 4   | 4   | 8   | 8   | (CPU 코어에 따라) 병렬쿼리 전체에 투입할 프로세스 수 |
+| max_parallel_workers_per_gather | 0   | 1   | 2   | 2   | 2~3   | 4   | 4~6   | (워크프로세스의 절반수준) 개별쿼리 하나를 처리할 때 추가로 작업시킬 코어. 0 이면 싱글 |
 | checkpoint_completion_target    | 0.9 | 0.9 | 0.9 | 0.9 | 0.9 | 0.9 | 0.9 | 다음 주기 전까지 90%의 시간을 들여서 천천히 나눠서 해 |
 | checkpoint_timeout   | 5min  | 5min   | 5min   | 10~15min | 10~15min | 15~30min | 15~30min | 데이터를 디스크로 강제로 옮기는 시간 간격 |
 | random_page_cost     | 1.1   | 1.1    | 1.1    | 1.1    | 1.1  | 1.1   | 1.1    | SSD 는 1.1, HDD는 4.0(기본값) |
 | autovacuum           | on    | on     | on     | on     | on   | on    | on     | 자동 진공 기능 켜야지 |
-| autovacuum_vacuum_scale_factor | 0.05 | 0.05 | 0.05 | 0.05 | 0.05 | 0.05 | 0.05 | 0.05 | 테이블 데이터 5% 가 변경되면 청소 시작 |
-| autovacuum_analyze_scale_factor | 0.02 | 0.02 | 0.02 | 0.02 | 0.02 | 0.02 | 0.02 | 0.02| 테이블 데이터 2% 가 변경되면 정보 갱신 |
+| autovacuum_vacuum_scale_factor | 0.05 | 0.05 | 0.05 | 0.05 | 0.05 | 0.05 | 0.05 | 테이블 데이터 5% 가 변경되면 청소 시작 |
+| autovacuum_analyze_scale_factor | 0.02 | 0.02 | 0.02 | 0.02 | 0.02 | 0.02 | 0.02 | 테이블 데이터 2% 가 변경되면 정보 갱신 |
 
 
