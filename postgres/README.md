@@ -35,6 +35,26 @@ $ docker exec temp_db id postgres
 $ docker rm -f temp_db
 ```
 
+## 데이터를 저장할 공간
+머신의 `/srv/pgdata` 디렉토리에 데이터가 저장되게 할 것이다.
+
+1. `pgdata` 디렉토리 만든다.
+2. 소유권을 컨테이너의 postgres UID 인 999 로 해준다.
+3. compose 의 volumes 작성 시 반영한다.
+
+```shell
+kiro@server:~$ cd /srv
+kiro@server:/srv$ mkdir -p pgdata
+kiro@server:/srv$ sudo chown -R 999:999 pgdata
+kiro@server:/srv$ ls -l
+total 20
+drwx------ 2 kiro kiro             16384 Jan  8 01:59 lost+found
+drwxrwxr-x 2  999 systemd-journal   4096 Jan  8 08:52 pgdata
+kiro@server:/srv$
+```
+
+머신에는 999 유저가 없지만 999 그룹은 systemd-journal 이다. 따라서 위와 같이 표시된다. 정상이다.
+
 ## postgresql.conf 가이드
 
 | Key                  | 1GB   | 1.5GB  | 2GB    | 4GB   | 8GB   | 16GB  | 24GB  | note  |
@@ -59,4 +79,28 @@ $ docker rm -f temp_db
 | autovacuum_vacuum_scale_factor | 0.05 | 0.05 | 0.05 | 0.05 | 0.05 | 0.05 | 0.05 | 테이블 데이터 5% 가 변경되면 청소 시작 |
 | autovacuum_analyze_scale_factor | 0.02 | 0.02 | 0.02 | 0.02 | 0.02 | 0.02 | 0.02 | 테이블 데이터 2% 가 변경되면 정보 갱신 |
 | log_temp_files       | 0     | 0      | 0     | 0      | 0     | 0     | 0     | 크기와 상관없이 디스크 캐시를 사용했다면 로그에 기록해 |
+
+
+
+## pg_hba.conf 가이드
+
+파일 내부의 `@authmethodhost@` 처럼 `@`로 둘러쌓인 곳은 대체한다. 지워야 한다.
+
+```
+# 로컬(유닉스 소켓) 접속: 모든 접속 허용
+local   all             all                                     trust
+
+# IPv4 루프백 접속
+host    all             all             127.0.0.1/32            scram-sha-256
+
+# IPv4 외부 접속 허용
+host    all             all             0.0.0.0/0               scram-sha-256
+
+# IPv6 접속 (필요시)
+host    all             all             ::1/128                 scram-sha-256
+
+# 복제용 설정 (나중에 확장 대비)
+host    replication     all             127.0.0.1/32            scram-sha-256
+```
+
 
