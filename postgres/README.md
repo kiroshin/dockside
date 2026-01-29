@@ -104,3 +104,48 @@ host    replication     all             127.0.0.1/32            scram-sha-256
 ```
 
 
+
+## 접속
+```
+# 내부 접속
+$ docker exec -it postgres psql -U postgres
+
+# 설정한 버퍼가 맞는지 확인
+postgres=# SHOW shared_buffers;
+
+# 테스터 유저 만들기
+postgres=# CREATE USER tester WITH ENCRYPTED PASSWORD 'tester';
+
+# 비번도 변경 가능
+postgres=# ALTER USER tester WITH ENCRYPTED PASSWORD '0000';
+
+# 테스터 데이터베이스 만들기
+postgres=# CREATE DATABASE tester_db OWNER tester;
+
+# 테스터에 자기 데이터베이스의 모든 권한 부여하기
+postgres=# GRANT ALL PRIVILEGES ON DATABASE tester_db TO tester;
+
+# 테스터 데이터베이스 들어가기
+postgres=# \c tester_db
+
+# 테스터 데이터베이스 나오기
+tester_db=# \q
+
+# 물리머신에서 테스터 데이터베이스로 접속해보기
+$ docker exec -it postgres psql -U tester -d tester_db
+
+# 아무 테이블이나 하나 만들어봐
+tester_db=> CREATE TABLE person (
+    id SERIAL PRIMARY KEY,
+    name VARCHAR(50) NOT NULL,
+    age INT,
+    phone VARCHAR(20),
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+# 값도 하나 넣어보고
+tester_db=> INSERT INTO person (name, age, phone) VALUES ('tom', 20, '010-1234-5678');
+
+# 출력도 해봐
+tester_db=> SELECT * FROM person;
+```
