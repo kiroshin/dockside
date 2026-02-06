@@ -69,8 +69,8 @@ kiro@server:/srv$
 | min_wal_size         | 80MB  | 128MB  | 256MB  | 512MB | 1GB   | 2GB   | 4GB   | 로그 캐시:  |
 | max_connections      | 10    | 20     | 30     | 50    | 80    | 100   | 150   | 최대 접속 커넥션 |
 |                      | 50명   | 80명   | 100명   | 200명  | 500명 | 1,000명 | 2,000명 | 대략적인 최대 유저 규모 |
-| max_worker_processes            | 2   | 4   | 4   | 8   | 8   | 12  | 16  | (CPU 코어의 2배) 시스템 전체의 DB 총 프로세스 |
-| max_parallel_workers            | 0   | 2   | 2   | 4   | 4   | 8   | 8   | (CPU 코어에 따라) 병렬쿼리 전체에 투입할 프로세스 수 |
+| max_worker_processes            | 2   | 4   | 4   | 8   | 8   | 12  | 16  | (CPU 코어의 2배) 시스템 전체의 DB 총 프로세스 - 설정 안해도... |
+| max_parallel_workers            | 0   | 2   | 2   | 4   | 4   | 8   | 8   | (CPU 코어에 따라) 병렬쿼리 전체에 투입할 프로세스 수 - 설정 안해도... |
 | max_parallel_workers_per_gather | 0   | 1   | 2   | 2   | 2~3   | 4   | 4~6   | (워크프로세스의 절반수준) 개별쿼리 처리할 때 추가로 작업시킬 코어. 0 이면 싱글 |
 | checkpoint_completion_target    | 0.9 | 0.9 | 0.9 | 0.9 | 0.9 | 0.9 | 0.9 | 다음 주기 전까지 90%의 시간을 들여서 천천히 나눠서 해 |
 | checkpoint_timeout   | 5min  | 5min   | 5min   | 10~15min | 10~15min | 15~30min | 15~30min | 데이터를 디스크로 강제로 옮기는 시간 간격 |
@@ -89,16 +89,12 @@ kiro@server:/srv$
 ```
 # 로컬(유닉스 소켓) 접속: 모든 접속 허용
 local   all             all                                     trust
-
 # IPv4 루프백 접속
 host    all             all             127.0.0.1/32            scram-sha-256
-
 # IPv4 외부 접속 허용
 host    all             all             0.0.0.0/0               scram-sha-256
-
 # IPv6 접속 (필요시)
 host    all             all             ::1/128                 scram-sha-256
-
 # 복제용 설정 (나중에 확장 대비)
 host    replication     all             127.0.0.1/32            scram-sha-256
 ```
