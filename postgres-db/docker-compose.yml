@@ -1,0 +1,59 @@
+services:
+  db:
+    image: postgres:16-bookworm
+    container_name: postgres-db
+    restart: unless-stopped
+    ports:
+      # 물리 서버와 포트 연결
+      - "5432:5432"
+    environment:
+      # 초기 비번은 0000
+      POSTGRES_PASSWORD: "0000"
+    volumes:
+      # 데이터는 볼륨으로 관리
+      - /srv/pgdata:/var/lib/postgresql/data
+      # 설정 파일은 이렇게 하면 주입(ro: reay only)되는데, 권한문제가 발생하면 configs 로 돌려라.
+      - ./postgresql.conf:/etc/postgresql/postgresql.conf:ro
+      - ./pg_hba.conf:/etc/postgresql/pg_hba.conf:ro
+    # configs:
+      # 설정 파일은 configs로 관리
+      # - source: pg_conf
+      #   target: /etc/postgresql/postgresql.conf
+      # - source: pg_hba
+      #   target: /etc/postgresql/pg_hba.conf
+    command: [
+      "postgres",
+      "-c", "config_file=/etc/postgresql/postgresql.conf",
+      "-c", "hba_file=/etc/postgresql/pg_hba.conf"
+    ]
+    # 공유메모리 : 도커의 기본값(64Mb)이 너무 작음.
+    #   df -h /dev/shm 해보면 tmpfs 라는 파일이 보이는데 이건 파일처럼 보이지만 실제 메모리 주소이다.
+    #   리눅스는 일반적으로 프로세스간 공유 메모리를 물리메모리의 절반정도로 자동으로 잡아둔다.
+    #   하지만 도커는 어림없다. 자원을 소진해버릴 수 있으므로 최소로 잡아두고 있는데,
+    #   데이터베이스나 머신러닝처럼 프로세스간 데이터 교환양이 많은 서비스는 이걸로 아주 부족하다.
+    #   보통 shared_buffers 의 2배로 잡아 명시한다. 잡아두고 사용하지 않으면 전체 점유량에 포함되지는 않는다.
+    shm_size: '512mb'
+    deploy:
+      resources:
+        limits:
+          # cpu 코어 사용값: 1.5 = 코어 1개 + 나머지 한 개는 50%
+          # 코어 최대치로 설정하면 안 된다. 안정 60%선이나 성능 80% 선에서 함께 구동되는 다른 컨테이너와 적절히 배분해라.
+          cpus: '1.5'
+          # 물리 램 최대 점유: 넘치면 도커가 강제종료 해버림
+          memory: 1G
+        # reservations:
+          # 평상시 보장받을 코어 수
+          # cpus: '0.5'
+          # 평상시 우선할당할 메모리양이다. 안쓰면 그때그때 지연 할당된다.
+          # 개발환경이라면 안 쓰는 게 낫고, 운영환경이라면 쓰는 것이 낫다.
+          # 여기서는 shared_buffers 의 2배로 잡아서 명시하면 된다.
+          # memory: 512M
+
+
+# 최하단에 실제 파일 위치를 알려주는 configs 정의
+# configs:
+#   pg_conf:
+#     file: ./postgresql.conf
+#   pg_hba:
+#     file: ./pg_hba.conf
+

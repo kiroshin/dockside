@@ -1,4 +1,4 @@
-# postgres
+# postgres-db
 
 ## 환경설정파일 빼오기
 ```shell
@@ -7,7 +7,7 @@
 #   --name 컨테이너이름: Container Name 실행될 컨테이너에 이름을 붙임
 #   -e : Environment variable 컨테이너 내부 환경변수 설정
 #
-$ docker run -d --name temp_db -e POSTGRES_PASSWORD=temp postgres:16-bookworm
+$ docker run -d --name temp-db -e POSTGRES_PASSWORD=temp postgres:16-bookworm
 
 # 환경설정파일 찾기
 #  / : 검색위치(루트)
@@ -15,9 +15,9 @@ $ docker run -d --name temp_db -e POSTGRES_PASSWORD=temp postgres:16-bookworm
 #  -type f : 검색대상을 파일(file) 로만 한정(디렉토리 제외)
 #  2>/dev/null : 리눅스 표준에러(Standard Error) 블랙홀로 츨력전달
 #
-$ docker exec temp_db find / -name "postgresql.conf.sample" -type f 2>/dev/null
+$ docker exec temp-db find / -name "postgresql.conf.sample" -type f 2>/dev/null
 /usr/share/postgresql/postgresql.conf.sample
-$ docker exec temp_db find / -name "pg_hba.conf.sample" -type f 2>/dev/null
+$ docker exec temp-db find / -name "pg_hba.conf.sample" -type f 2>/dev/null
 /usr/share/postgresql/16/pg_hba.conf.sample
 
 # 데이터 디렉토리 확인하기
@@ -25,14 +25,14 @@ $ docker exec temp_db find / -name "pg_hba.conf.sample" -type f 2>/dev/null
 # 도커용 배포판은 보통 /var/lib/postgresql/data 로 고정됨
 
 # 환경설정파일 복사
-$ docker cp temp_db:/usr/share/postgresql/postgresql.conf.sample ./postgresql.conf
-$ docker cp temp_db:/usr/share/postgresql/16/pg_hba.conf.sample ./pg_hba.conf
+$ docker cp temp-db:/usr/share/postgresql/postgresql.conf.sample ./postgresql.conf
+$ docker cp temp-db:/usr/share/postgresql/16/pg_hba.conf.sample ./pg_hba.conf
 
 # 컨테이너 내부 postgres 계정의 id 확인: 999 일 것임
-$ docker exec temp_db id postgres
+$ docker exec temp-db id postgres
 
 # 임시 컨테이너 삭제 - 이미지는 지우지 않음
-$ docker rm -f temp_db
+$ docker rm -f temp-db
 ```
 
 ## 데이터를 저장할 공간
@@ -108,7 +108,7 @@ host    replication     all             127.0.0.1/32            scram-sha-256
 ## 접속
 ```
 # 내부 접속
-$ docker exec -it postgres psql -U postgres
+$ docker exec -it postgres-db psql -U postgres
 
 # 설정한 버퍼가 맞는지 확인
 postgres=# SHOW shared_buffers;
@@ -132,7 +132,7 @@ postgres=# \c tester_db
 tester_db=# \q
 
 # 물리머신에서 테스터 데이터베이스로 접속해보기
-$ docker exec -it postgres psql -U tester -d tester_db
+$ docker exec -it postgres-db psql -U tester -d tester_db
 
 # 아무 테이블이나 하나 만들어봐
 tester_db=> CREATE TABLE person (

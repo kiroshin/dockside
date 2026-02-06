@@ -5,7 +5,7 @@ services:
         # 빌드할 이미지 이름
         image: ssh-ubuntu:24.04
         # 컨테이너 이름
-        container_name: compiler
+        container_name: compiler-ssh
         # 재부팅 해도 중지되지 않게
         restart: unless-stopped
         # 필수: 컨테이너 유지를 위해 표준입력 열어둬
