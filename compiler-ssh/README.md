@@ -8,7 +8,6 @@
 - `git git-lfs`: 소스관리 깃
   * 반드시 `$ git lfs install` 로 한 번은 초기화 해줘야 한다.
 - `curl` 또는 `wget` : 다운로드 도구
-- `unzip` : 압축풀어
 
 
 ## 개발툴
@@ -17,7 +16,6 @@
 - `python3-pip` : 파이썬 패키지 매니저
 - `python3-venv` : 파이썬 가상환경
 - `curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh` : 러스트 컴파일러
-- `protobuf-compiler` : 프로토콜버퍼 컴파일러
 - `cmake` : 이건 C++ 빌드할 때
 - `gdb` : 디버거
 

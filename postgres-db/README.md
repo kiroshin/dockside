@@ -63,7 +63,7 @@ kiro@server:/srv$
 | shared_buffers       | 256MB | 384MB  | 512MB  | 1GB   | 2GB   | 4GB   | 6GB   | 전체 할당량의 25%. 자주 요청하는 데이터 |
 | work_mem             | 2MB   | 4MB    | 8MB    | 16MB  | 24MB  | 32MB  | 48MB  | 정렬 조인 작업당 메모리 = 램 * 0.05 / Max 그러나 좀 줄여서 보수적으로 계산|
 | maintenance_work_mem | 64MB  | 96MB   | 128MB  | 256MB | 512MB | 1GB   | 1.5GB | 인덱스 생성, 백업 등 관리용 메모리 |
-| effective_cache_size | 768MB | 1.1GB  | 1.5GB  | 3GB   | 6GB   | 12GB  | 18GB  | 전체 할당량의 약 75%. 쿼리 수행 캐시 |
+| effective_cache_size | 768MB | 1126MB  | 1536MB  | 3GB   | 6GB   | 12GB  | 18GB  | 전체 할당량의 약 75%. 쿼리 수행 캐시 |
 | wal_buffers          | 8MB   | 12MB   | 16MB   | 16MB  | 16MB  | 16MB  | 16MB  | shared_buffers의 약 3% 정도(최대 16MB) 쓰기 버퍼 |
 | max_wal_size         | 512MB | 1GB    | 1.5GB  | 2GB   | 2~4GB   | 4~8GB   | 8~16GB  | 로그 캐시: 쓰기속도와 복구시간 사이의 균형을 맞춰야 |
 | min_wal_size         | 80MB  | 128MB  | 256MB  | 512MB | 1GB   | 2GB   | 4GB   | 로그 캐시:  |
