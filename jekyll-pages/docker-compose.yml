@@ -1,0 +1,16 @@
+services:
+    :
+        # 현재 폴더 도커파일 읽어와
+        build: .
+        # 빌드할 이미지 이름
+        image: jekyll-bookworm:3.3
+        # 컨테이너 이름
+        container_name: jekyll-pages
+        # 재부팅 해도 중지되지 않게
+        restart: unless-stopped
+        # tcp 머신포트:도커포트 연결
+        ports:
+            - "4000:4000"
+        # 머신폴더(이미 존재함)를 컨테이너에 마운트
+        volumes:
+            - /srv/jekyll:/srv
