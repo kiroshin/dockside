@@ -1,3 +1,4 @@
 # 깃허브에 깔맞춤: 로컬의 /srv/jekyll 로 복사한 뒤 테마 작업
 source "https://rubygems.org"
 gem "github-pages", group: :jekyll_plugins
+
