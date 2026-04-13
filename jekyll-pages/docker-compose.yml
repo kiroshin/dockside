@@ -1,23 +1,25 @@
 services:
-    pages:
-        # 현재 폴더 도커파일 읽어와
-        build: .
-        # 빌드할 이미지 이름
-        image: jekyll-bookworm:3.3
-        # 컨테이너 이름
-        container_name: jekyll-pages
-        # 재부팅 해도 중지되지 않게 명시적으로 중지하지 않으면 다시 시작함
-        restart: unless-stopped
-        # tcp 머신포트:도커포트 연결
-        ports:
-            - "4000:4000"
-        # 머신폴더(이미 존재함)를 컨테이너에 마운트
-        volumes:
-            - /srv/jekyll:/srv
-        # 서비스가 시작될 때 컨테이너 내부 작업폴더 고정 Dockfile 의 WORKDIR 덮어씌움
-        working_dir: /srv
-        deploy:
-          resources:
-            limits:
-              cpus: '1.0'
-              memory: 512MB
+  pages:
+    # 현재 폴더 도커파일 읽어와
+    build: .
+    # 빌드할 이미지 이름
+    image: jekyll-bookworm:3.3
+    # 컨테이너 이름
+    container_name: jekyll-pages
+    # 재부팅 해도 중지되지 않게 명시적으로 중지하지 않으면 다시 시작함
+    restart: unless-stopped
+    # tcp 머신포트:도커포트 연결
+    ports:
+      - "4000:4000"
+    # 머신폴더(이미 존재함)를 컨테이너에 마운트
+    volumes:
+      - /srv/jekyll:/srv
+    # 서비스가 시작될 때 컨테이너 내부 작업폴더 고정 Dockfile 의 WORKDIR 덮어씌움
+    working_dir: /srv
+    environment:
+      - PAGES_REPO_NWO=local/dev
+    deploy:
+      resources:
+      limits:
+        cpus: '1.0'
+        memory: 512MB
