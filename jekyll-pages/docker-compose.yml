@@ -20,6 +20,6 @@ services:
       - PAGES_REPO_NWO=local/dev
     deploy:
       resources:
-      limits:
-        cpus: '1.0'
-        memory: 512MB
+        limits:
+          cpus: '1.0'
+          memory: 512MB
