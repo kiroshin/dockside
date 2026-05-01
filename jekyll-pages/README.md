@@ -6,7 +6,9 @@
 
 ```
 접속: http://주소:4000
-컨테이너 빌드: docker-compose up --build
-컨테이너 정지하고 삭제: docker-compose down
-컨테이너 정지만 : docker-compose stop
+컨테이너 빌드: docker compose up --build
+컨테이너 정지하고 삭제: docker compose down
+컨테이너 정지만 : docker compose stop
+컨테이너 정지만 : docker compose stop
+컨테이너 실기간 로그 : docker compose logs -f
 ```
