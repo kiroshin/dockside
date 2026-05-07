@@ -57,25 +57,25 @@ kiro@server:/srv$
 
 ## postgresql.conf 가이드
 
-| Key                             | 1GB   | 1.5GB  | 2GB    | 4GB    | 8GB    | 10GB   | 16GB   | 24GB   | note  |
+| Key                             | 1GB   | 1.5GB  | 2GB    | 4GB    | 8GB    | **10GB** | 16GB | 24GB   | note  |
 | ------------------------------- | ----- | ------ | ------ | ------ | ------ | ------ | ------ | ------ | ----- |
 | listen_addresses                | *     | *      | *      | *      | *      |   *    | *      | *      | localhost 로 되어있다면 * 로 바꿔야 외부접속 됨 |
 | shared_buffers                  | 256MB | 384MB  | 512MB  | 1GB    | 2GB    | 2.5GB  | 4GB    | 6GB    | 전체 할당량의 25%. 자주 요청하는 데이터 |
-| work_mem                        | 4MB   | 6MB    | 8MB    | 12MB   | 16MB   | 20MB   | 32MB   | 48MB   | 정렬 조인 작업당 메모리 = 램 * 0.05 / Max 그러나 좀 줄여서 보수적으로 계산|
+| work_mem                        | 4MB   | 6MB    | 8MB    | 12MB   | 16MB   | 20MB   | 24MB   | 32MB   | 정렬 조인 작업당 메모리 = 램 * 0.05 / Max 그러나 좀 줄여서 보수적으로 계산|
 | maintenance_work_mem            | 64MB  | 96MB   | 128MB  | 256MB  | 512MB  | 768MB  | 1GB    | 1.5GB  | 인덱스 생성, 백업 등 관리용 메모리 |
-| effective_cache_size            | 768MB | 1.1GB  | 1.5GB  | 3GB    | 6GB    | 7.5GB  | 12GB   | 18GB   | 전체 할당량의 약 75%. 쿼리 수행 캐시 |
+| effective_cache_size            | 768MB | 1.1GB  | 1.5GB  | 3GB    | 6GB    | 7.5GB  | 10GB   | 16GB   | 전체 할당량의 약 75%. 쿼리 수행 캐시 |
 | wal_buffers                     | 8MB   | 12MB   | 16MB   | 16MB   | 16MB   | 16MB   | 16MB   | 16MB   | shared_buffers의 약 3% 정도(최대 16MB) 쓰기 버퍼 |
-| max_wal_size                    | 1GB   | 1.5GB  | 2GB    | 4GB    | 6GB    | 8GB    | 12GB   | 16GB   | 로그 캐시: 쓰기속도와 복구시간 사이의 균형을 맞춰야 |
-| min_wal_size                    | 256MB | 384MB  | 512MB  | 1GB    | 1.5GB  | 2GB    | 3GB    | 4GB    | 로그 캐시:  |
+| max_wal_size                    | 1GB   | 1.5GB  | 2GB    | 4GB    | 6GB    | 8GB    | 8GB    | 12GB   | 로그 캐시: 쓰기속도와 복구시간 사이의 균형을 맞춰야 |
+| min_wal_size                    | 256MB | 384MB  | 512MB  | 1GB    | 1.5GB  | 2GB    | 2GB    | 3GB    | 로그 캐시:  |
 | max_connections                 | 10    | 20     | 30     | 50     | 80     | 100    | 150    | 200    | 최대 접속 커넥션 |
 | max_worker_processes            | 1     | 2      | 3      | 4      | 6      | 8      | 12     | 16     | (CPU 코어의 2배) 시스템 전체의 DB 총 프로세스 - 설정 안해도... |
 | max_parallel_workers            | 0     | 1      | 2      | 3      | 3      | 4      | 8      | 8      | (CPU 코어에 따라) 병렬쿼리 전체에 투입할 프로세스 수 - 설정 안해도... |
 | max_parallel_workers_per_gather | 0     | 0      | 1      | 1      | 2      | 2      | 4      | 4      | (워크프로세스의 절반수준) 개별쿼리 처리할 때 추가로 작업시킬 코어. 0 이면 싱글 |
 | checkpoint_completion_target    | 0.9   | 0.9    | 0.9    | 0.9    | 0.9    | 0.9    | 0.9    | 0.9    | 다음 주기 전까지 90%의 시간을 들여서 천천히 나눠서 해 |
-| checkpoint_timeout              | 10min  | 10min | 15min  | 20min  | 30min  | 30min  | 45min  | 60min  | 데이터를 디스크로 강제로 옮기는 시간 간격 |
+| checkpoint_timeout              | 10min | 10min  | 15min  | 20min  | 30min  | 30min  | 30min  | 30min  | 데이터를 디스크로 강제로 옮기는 시간 간격 |
 | random_page_cost                | 1.1   | 1.1    | 1.1    | 1.1    | 1.1    | 1.1    | 1.1    | 1.1    | SSD 는 1.1, HDD는 4.0(기본값) |
 | autovacuum                      | on    | on     | on     | on     | on     | on     | on     | on     | 자동 진공 기능 켜야지 |
-| autovacuum_vacuum_scale_factor  | 0.05  | 0.05   | 0.05   | 0.02   | 0.01   | 0.01   | 0.01   | 0.05   | 테이블 데이터 0.05 => 5% 가 변경되면 청소 시작 |
+| autovacuum_vacuum_scale_factor  | 0.05  | 0.05   | 0.05   | 0.02   | 0.01   | 0.01   | 0.01   | 0.01   | 테이블 데이터 0.05 => 5% 가 변경되면 청소 시작 |
 | autovacuum_analyze_scale_factor | 0.02  | 0.02   | 0.02   | 0.01   | 0.005  | 0.005  | 0.005  | 0.002  | 테이블 데이터 0.03 => 2% 가 변경되면 정보 갱신 |
 | log_temp_files                  | 0     | 0      | 0      | 0      | 0      | 0      | 0      | 0      | 크기와 상관없이 디스크 캐시를 사용했다면 로그에 기록해 |
 
