@@ -60,13 +60,13 @@ kiro@server:/srv$
 | Key                             | 1GB   | 1.5GB  | 2GB    | 4GB    | 8GB    | **10GB** | 16GB | 24GB   | note  |
 | ------------------------------- | ----- | ------ | ------ | ------ | ------ | ------ | ------ | ------ | ----- |
 | listen_addresses                | *     | *      | *      | *      | *      |   *    | *      | *      | localhost 로 되어있다면 * 로 바꿔야 외부접속 됨 |
-| shared_buffers                  | 256MB | 384MB  | 512MB  | 1GB    | 2GB    | 2.5GB  | 4GB    | 6GB    | 전체 할당량의 25%. 자주 요청하는 데이터 |
+| shared_buffers                  | 256MB | 384MB  | 512MB  | 1GB    | 2GB    | 2560MB | 4GB    | 6GB    | 전체 할당량의 25%. 자주 요청하는 데이터 |
 | work_mem                        | 4MB   | 6MB    | 8MB    | 12MB   | 16MB   | 20MB   | 24MB   | 32MB   | 정렬 조인 작업당 메모리 = 램 * 0.05 / Max 그러나 좀 줄여서 보수적으로 계산|
 | maintenance_work_mem            | 64MB  | 96MB   | 128MB  | 256MB  | 512MB  | 768MB  | 1GB    | 1.5GB  | 인덱스 생성, 백업 등 관리용 메모리 |
-| effective_cache_size            | 768MB | 1.1GB  | 1.5GB  | 3GB    | 6GB    | 7.5GB  | 10GB   | 16GB   | 전체 할당량의 약 75%. 쿼리 수행 캐시 |
+| effective_cache_size            | 768MB | 1126MB | 1536MB | 3GB    | 6GB    | 7680MB | 10GB   | 16GB   | 전체 할당량의 약 75%. 쿼리 수행 캐시 |
 | wal_buffers                     | 8MB   | 12MB   | 16MB   | 16MB   | 16MB   | 16MB   | 16MB   | 16MB   | shared_buffers의 약 3% 정도(최대 16MB) 쓰기 버퍼 |
-| max_wal_size                    | 1GB   | 1.5GB  | 2GB    | 4GB    | 6GB    | 8GB    | 8GB    | 12GB   | 로그 캐시: 쓰기속도와 복구시간 사이의 균형을 맞춰야 |
-| min_wal_size                    | 256MB | 384MB  | 512MB  | 1GB    | 1.5GB  | 2GB    | 2GB    | 3GB    | 로그 캐시:  |
+| max_wal_size                    | 1GB   | 1536MB | 2GB    | 4GB    | 6GB    | 8GB    | 8GB    | 12GB   | 로그 캐시: 쓰기속도와 복구시간 사이의 균형을 맞춰야 |
+| min_wal_size                    | 256MB | 384MB  | 512MB  | 1GB    | 1536MB | 2GB    | 2GB    | 3GB    | 로그 캐시:  |
 | max_connections                 | 10    | 20     | 30     | 50     | 80     | 100    | 150    | 200    | 최대 접속 커넥션 |
 | max_worker_processes            | 1     | 2      | 3      | 4      | 6      | 8      | 12     | 16     | (CPU 코어의 2배) 시스템 전체의 DB 총 프로세스 - 설정 안해도... |
 | max_parallel_workers            | 0     | 1      | 2      | 3      | 3      | 4      | 8      | 8      | (CPU 코어에 따라) 병렬쿼리 전체에 투입할 프로세스 수 - 설정 안해도... |
