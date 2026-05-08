@@ -20,7 +20,7 @@ docker system df -v     : 상세출력
 docker exec -it 컨테이너 내부명령       :ex) docker exec -it aswood /usr/bin/bash
 
 # 컴포즈 명령어
-docker compose up -d                : 컨테이너 없으면 있으면 생성, 데몬으로 실행
+docker compose up -d                : 컨테이너 없으면 있으면 생성, 데몬으로 실행. 여기서 -d 는 Detached
 docker compose down                 : 컨테이너 중지 + 컨테이너 삭제 + 네트워크 삭제
 docker compose stop                 : 그냥 중지만
 docker compose start                : 컨테이너 이미 있을 때 데몬으로 실행
@@ -29,7 +29,7 @@ docker compose logs                 : 로그 출력
 docker compose logs -f              : 로그 실시간 출력
 
 # Dockerfile 로 이미지 빌드 후 컨테이너 시작
-docker compose up -d --build
+docker compose up -d --build        : 따로 -d 옵션을 주지 않으면 진행 과정을 볼 수 있다.
 
 
 # 이미지 삭제
