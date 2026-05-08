@@ -7,7 +7,7 @@
 #   --name 컨테이너이름: Container Name 실행될 컨테이너에 이름을 붙임
 #   -e : Environment variable 컨테이너 내부 환경변수 설정
 #
-$ docker run -d --name temp-db -e POSTGRES_PASSWORD=temp postgres:16-bookworm
+$ docker run -d --name temp-db -e POSTGRES_PASSWORD=temp postgres:17-bookworm
 
 # 환경설정파일 찾기
 #  / : 검색위치(루트)

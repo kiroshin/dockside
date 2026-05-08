@@ -65,4 +65,86 @@
     2. `nvm current`
 
 
+## 인증서
+```shell
+# SSH 키 쌍(공개키와 개인키)
+$ ssh-keygen -t ed25519 -C "your_email@example.com"
+$ ssh-keygen -t ed25519 -C "your_email@example.com" -f ~/.ssh/my_custom_key   # 저장할 이름 지정
+
+# 확장자 .pub 가 붙은 게 공개키이다. 이걸 출력해서 깃허브 등록하면 된다.
+# 다른 계정에 등록했으면 중복 등록 안 된다.
+# 전체 계정을 등록해도 되고, 개별 private 계정에 등록해서 컨트롤해도 된다.
+$ cat ~/.ssh/id_ed25519.pub
+
+# 퍼미션 - 자동으로 이렇게 되니 딱히 안 해도 된다.
+$ chmod 700 ~/.ssh                    # (소유자만 진입 및 읽기/쓰기 가능)
+$ chmod 600 ~/.ssh/id_ed25519         # (소유자만 읽기/쓰기 가능)
+$ chmod 644 ~/.ssh/id_ed25519.pub     # (소유자는 읽기/쓰기, 나머지는 읽기 가능)
+$ chmod 600 ~/.ssh/config
+
+# 연결 테스트
+$ ssh -T git@github.com
+
+# 전역(Global) 설정: 이 서버의 모든 프로젝트에 적용
+$ git config --global user.email "your_email@example.com"
+$ git config --global user.name "Your Name"
+
+# 확인
+$ git config --list
+
+# 기존에 http 기반으로 클론받았다면 아래와 같이 업데이트
+$ git remote set-url origin git@github.com:유저명/저장소명.git
+
+# 별칭을 달 수도 있다. config 파일에 넣는다
+# Host Fast
+#     HostName github.com
+#     User git
+#     IdentityFile ~/.ssh/id_ed25519
+#     IdentitiesOnly yes
+$ git clone Fast:유지/리포지토리.git
+
+# 개인키는 서버 밖은 안 빠져나가는 게 좋지만, 관리 편의성을 위해 이렇게 접소키로 쓸 수 있다.
+# 일단 우분투에서 공개키(.pub) 내용을 authorized_keys 파일에 추가
+$ cat ~/.ssh/id_ed25519.pub >> ~/.ssh/authorized_keys
+
+# 클라이언트 .ssh/config 파일
+# Host myserver
+#     HostName 서버아이피
+#     User 유저이름
+#     IdentityFile ~/.ssh/id_ed25519
+$ ssh myserver
+
+```
+
+# 자주 쓰는 깃 명령
+```
+1. 시작하기
+git init                        : 현재 디렉토리를 로컬 Git 저장소로 설정
+git clone [URL]                 : 원격 저장소(GitHub 등)의 내용을 내 컴퓨터로 복사해 옵니다
+
+2. 저장하기
+git status                      : 현재 변경된 파일들의 상태 확인
+git add [파일명]                  : 특정 파일을 Staging Area에 담는다. 모든 파일은 git add .
+git commit -m "메시지"            : 한 덩어리로 묶어 저장소에 기록
+git commit --amend              : 바로 직전의 커밋 메시지를 수정 혹은 파일 추가
+
+3. 가지치기
+git branch                      : 현재 브랜치 목록을 확인
+git switch -c [브랜치명]          : 새로운 브랜치를 만들고 바로 이동
+git switch [브랜치명]             : 해당 브랜치로 이동
+git merge [브랜치명]              : 현재 브랜치에 다른 브랜치의 변경 사항을 합칩니다.
+git branch -d [브랜치명]          : 사용이 끝난 브랜치 삭제
+
+4. 동기화하기
+git remote add origin [URL]     : 로컬 저장소와 원격 저장소 연결
+git push origin [브랜치명]        : 로컬의 커밋들을 원격 저장소로 업로드. 그냥 git push 현재 브랜치에 업로드
+git pull                        : 원격 저장소의 변경 내용을 가져와서 내 코드에 즉시 합칩니다.
+git fetch                       : 원격 저장소의 변경 내용만 확인하고, 내 코드에 합치지는 않는다.
+
+5. 되돌리기 및 확인
+git log                         : 커밋 기록을 확인
+git diff                        : 수정했지만 아직 add하지 않은 코드의 차이점
+git reset --hard [커밋ID]        : 해당 커밋 시점으로 아예 되돌아간다. (이후 작업물 삭제됨)
+git revert [커밋ID]              : 기존 커밋을 취소하는 '새로운 커밋'을 만듦. ((안전한 방법)
+```
 
