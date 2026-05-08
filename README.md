@@ -34,6 +34,11 @@ docker image rm                    : 구 docker rmi 이미지 => 컨테이너 �
 docker image rm -f 이미지명          : 구 docker rmi -f 이미지 => 강제 삭제. 다 날려버리고 다 지움
 docker image prune -a              : 사용 안하는 이미지 모두 지움
 
+# 빌드 캐쉬
+docker builder prune                : 필요없는 빌드 캐쉬 정리
+docker builder prune -a             : 모든 빌드 캐쉬 정리 - 빌드 이력이 완전히 사라지므로, 다음 빌드 때는 처음부터 모든 레이어를 다시 내려받고 실행하게 된다.
+docker system prune                 : 컨테이너, 네트워크, 이미지(dangling)와 함께 빌드 캐시도 세트로 삭제
+
 # 도커 전체 리소스 사용량 요약
 docker system df
 docker system df -v                 : 상세출력
