@@ -3,41 +3,52 @@ Docker Test
 
 ## 명령
 ```
-# 실행중인 컨테이너 목록
-docker ps
-docker ps -a                        : 전체 목록
-docker ps -s                        : 사이즈
+# 컨테이너 목록
+docker container ls                 : 구 docker ps
+docker container ls -a              : 전체 목록
+docker container ls -s              : 사이즈
 
 # 컨테이너 삭제
-docker rm 컨테이너이름                : ex) docker rm -f temp_db
-docker container prune            : 정지된 컨테이너 일괄 삭제
+docker container rm 컨이름            : 구 docker rm 컨테이너이름
+docker container rm -f 컨이름         : 사용중이어도 강제삭제
+docker container rm -v 컨이름         : 볼륨까지 삭제
+docker container prune              : 정지된 컨테이너 일괄 삭제(볼륨은 남는다)
+
+# 컨테이너 볼륨
+docker volume rm 볼륨이름             : 볼륨 삭제
+docker volume prune                 : 안쓰는 볼륨 정리
+
+# 컨테이너 상태
+docker container stats              : 구 docker stats
+
+# 컨테이너 내부 명령 실행
+# -i (interactive): 표준 입력(stdin)을 열어두기
+# -t (tty): 가상 터미널 할당
+docker container exec -it 컨테이너 명령어   : 구 docker exec -it 컨테이너 내부명령 => docker exec -it aswood /usr/bin/bash
+
+# 이미지
+docker image ls                    : 과거 docker images
+docker image ls -a                 : 중간 레이어도 보여줌
+docker image build                 : Dockerfile 를 가지고 이미지를 만듦
+docker image rm                    : 구 docker rmi 이미지 => 컨테이너 먼저 지우고 이미지 지워라. 이 명령은 태그만 지움.
+docker image rm -f 이미지명          : 구 docker rmi -f 이미지 => 강제 삭제. 다 날려버리고 다 지움
+docker image prune -a              : 사용 안하는 이미지 모두 지움
 
 # 도커 전체 리소스 사용량 요약
 docker system df
-docker system df -v     : 상세출력
-
-# 컨테이너 내부 명령 실행
-docker exec -it 컨테이너 내부명령       :ex) docker exec -it aswood /usr/bin/bash
+docker system df -v                 : 상세출력
 
 # 컴포즈 명령어
 docker compose up -d                : 컨테이너 없으면 있으면 생성, 데몬으로 실행. 여기서 -d 는 Detached
-docker compose down                 : 컨테이너 중지 + 컨테이너 삭제 + 네트워크 삭제
+docker compose up -d --build        : Dockerfile 로 이미지 빌드 후 컨테이너 시작
+docker compose down                 : 컨테이너 중지 + 컨테이너 삭제 + 네트워크 삭제(볼륨 안 지움)
+docker compose down -v              : 컨테이너 중지 + 컨테이너 삭제 + 네트워크 삭제(볼륨 까지 지움)
 docker compose stop                 : 그냥 중지만
 docker compose start                : 컨테이너 이미 있을 때 데몬으로 실행
 docker compose restart              : 컨테이너 실행 그대로 다시 재시작
 docker compose logs                 : 로그 출력
 docker compose logs -f              : 로그 실시간 출력
 
-# Dockerfile 로 이미지 빌드 후 컨테이너 시작
-docker compose up -d --build        : 따로 -d 옵션을 주지 않으면 진행 과정을 볼 수 있다.
-
-
-# 이미지 삭제
-docker rmi aswood-db
-docker rmi -f aswood-db
-
-# 도커 프로세스 상태
-docker stats
 ```
 
 
