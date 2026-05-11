@@ -55,6 +55,55 @@ kiro@server:/srv$
 
 머신에는 999 유저가 없지만 999 그룹은 systemd-journal 이다. 따라서 위와 같이 표시된다. 정상이다.
 
+
+## 도커 내부 포스트그레와 통싱한 유닉스 소켓
+```shell
+# 호스트에 디렉트리 만들기
+$ sudo mkdir -p /var/run/postgresql
+
+# 권한 부여 (999는 postgres 이미지의 기본 UID입니다)
+# 이 디렉토리에서 컨테이너 내부의 postgres 유저가 소켓 파일을 생성하게 된다.
+$ sudo chown -R 999:999 /var/run/postgresql
+
+# 접근 권한 설정
+# 나중에 다른 프로그램에서 이 소켓을 읽어야 하므로 775 또는 777로 설정한다.
+$ sudo chmod -R 775 /var/run/postgresql
+
+# postgresql.conf 수정
+# 기본 설정은 /tmp 에 만드는 것으로 되어 있지만 호스트에서 직접 실행되는 것이 아니라 도커 위에서 동작하며
+# 컨테이너가 내려가도 호스트와 연결된 볼륨의 파일은 그대로 남는다.
+# 그래서 문제가 생겼을 경우 sudo rm -rf /var/run/postgresql/* 한 방으로 상황을 깔끔하게 정리할 수 있다.
+# 또한 포스트그레가 Lock 을 만들게 되므로 디렉토리 권한에 예민하다. 따라서 전용 공간을 만드는 것이 좋다.
+# 이 소켓(.s.PGSQL.5432)은 PostgreSQL 재시작 시 지우고 다시 만들게 된다.
+unix_socket_directories = '/var/run/postgresql'
+
+```
+
+러스트 연결 설정
+```rust
+// (TCP): postgres://user:password@localhost:5432/dbname
+// (UDS): host=/var/run/postgresql user=postgres password=your_password dbname=danbi
+
+// 문제는 중간에 퍼센트인코딩을 해야 한다는 것이다. / => "%2F"
+// URL 형식을 쓸 때 (인코딩 필요할 수 있음)
+let url = r#"postgres://postgres:password@/var%2Frun%2Fpostgresql/danbi"#;
+// Danbi 프로젝트에서 사용하실 설정 예시
+let conn_str = r#"host=/var/run/postgresql user=유저이름 password=패스워드 dbname=디비이름"#;
+
+// 결국 이렇게 하면 된다.
+let user = &config.db_user;
+let password = &config.db_password;
+let dbname = &config.db_name;
+let socket_path = "/var/run/postgresql"; // 유닉스 UDS 경로
+
+// format! 매크로로 연결 문자열 생성
+let db_path = format!("host={} port={} user={} password={} dbname={} sslmode=disable", path, port, username, password, dbname);
+// 혹은 그냥 이렇게
+let db_path = format!("host={path} port={port} user={username} password={password} dbname={dbname} sslmode=disable");
+
+```
+
+
 ## postgresql.conf 가이드
 
 | Key                             | 1GB   | 1.5GB  | 2GB    | 4GB    | 8GB    | **10GB** | 16GB | 24GB   | note  |

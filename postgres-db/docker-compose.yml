@@ -2,6 +2,7 @@ services:
   db:
     image: postgres:17-bookworm
     container_name: postgres-db
+    user: "999:999"
     restart: unless-stopped
     ports:
       # 물리 서버와 포트 연결
@@ -15,6 +16,8 @@ services:
       # 설정 파일은 이렇게 하면 주입(ro: reay only)되는데, 권한문제가 발생하면 configs 로 돌려라.
       - ./postgresql.conf:/etc/postgresql/postgresql.conf:ro
       - ./pg_hba.conf:/etc/postgresql/pg_hba.conf:ro
+      # 소켓 통로 추가 (호스트의 /var/run/postgresql 사용)
+      - /var/run/postgresql:/var/run/postgresql
     # configs:
       # 설정 파일은 configs로 관리
       # - source: pg_conf

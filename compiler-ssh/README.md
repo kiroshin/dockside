@@ -65,7 +65,7 @@
     2. `nvm current`
 
 
-## 인증서
+## SSH 인증서(ed25519)
 ```shell
 # SSH 키 쌍(공개키와 개인키)
 $ ssh-keygen -t ed25519 -C "your_email@example.com"
@@ -146,5 +146,15 @@ git log                         : 커밋 기록을 확인
 git diff                        : 수정했지만 아직 add하지 않은 코드의 차이점
 git reset --hard [커밋ID]        : 해당 커밋 시점으로 아예 되돌아간다. (이후 작업물 삭제됨)
 git revert [커밋ID]              : 기존 커밋을 취소하는 '새로운 커밋'을 만듦. ((안전한 방법)
+
+6. 닥치고 덮어쓰기
+# 원격 저장소의 최신 정보를 가져옴 (내 코드를 건드리지는 않음)
+git fetch --all
+# 현재(예: main)를 원격의 상태로 강제 초기화
+git reset --hard origin/main
+# 추적되지 않는 새 파일들까지 싹 다 삭제해서 클린하게 만듦
+# -f: 강제로
+# -d: 빈 디렉토리까지
+git clean -fd
 ```
 
