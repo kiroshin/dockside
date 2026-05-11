@@ -120,6 +120,7 @@ let db_path = format!("host={path} port={port} user={username} password={passwor
 | max_worker_processes            | 1     | 2      | 3      | 4      | 6      | 8      | 12     | 16     | (CPU 코어의 2배) 시스템 전체의 DB 총 프로세스 - 설정 안해도... |
 | max_parallel_workers            | 0     | 1      | 2      | 3      | 3      | 4      | 8      | 8      | (CPU 코어에 따라) 병렬쿼리 전체에 투입할 프로세스 수 - 설정 안해도... |
 | max_parallel_workers_per_gather | 0     | 0      | 1      | 1      | 2      | 2      | 4      | 4      | (워크프로세스의 절반수준) 개별쿼리 처리할 때 추가로 작업시킬 코어. 0 이면 싱글 |
+| max_parallel_maintenance_workers | 0     | 0      | 1      | 1      | 2      | 2      | 4      | 4      | (워크프로세스의 절반수준) 청소할 때 프로세스. |
 | checkpoint_completion_target    | 0.9   | 0.9    | 0.9    | 0.9    | 0.9    | 0.9    | 0.9    | 0.9    | 다음 주기 전까지 90%의 시간을 들여서 천천히 나눠서 해 |
 | checkpoint_timeout              | 10min | 10min  | 15min  | 20min  | 30min  | 30min  | 30min  | 30min  | 데이터를 디스크로 강제로 옮기는 시간 간격 |
 | random_page_cost                | 1.1   | 1.1    | 1.1    | 1.1    | 1.1    | 1.1    | 1.1    | 1.1    | SSD 는 1.1, HDD는 4.0(기본값) |
@@ -127,6 +128,9 @@ let db_path = format!("host={path} port={port} user={username} password={passwor
 | autovacuum_vacuum_scale_factor  | 0.05  | 0.05   | 0.05   | 0.02   | 0.01   | 0.01   | 0.01   | 0.01   | 테이블 데이터 0.05 => 5% 가 변경되면 청소 시작 |
 | autovacuum_analyze_scale_factor | 0.02  | 0.02   | 0.02   | 0.01   | 0.005  | 0.005  | 0.005  | 0.002  | 테이블 데이터 0.03 => 2% 가 변경되면 정보 갱신 |
 | log_temp_files                  | 0     | 0      | 0      | 0      | 0      | 0      | 0      | 0      | 크기와 상관없이 디스크 캐시를 사용했다면 로그에 기록해 |
+| temp_file_limit                 | 25GB  | 25GB   | 25GB   | 25GB   | 25GB   | 50GB   | 50GB   | 50GB   | work_mem보다 큰 작업이 들어오면 DB는 디스크에 임시파일 만든다. 50% 정도 할당 |
+| statement_timeout               | 30s   | 30s    | 30s    | 30s    | 30s    | 30s    | 30s    | 30s    | 쿼리 하나가 너무 오래 걸리면 강제종료 |
+| temp_file_limit                 | 10s   | 10s    | 10s    | 10s    | 10s    | 10s    | 10s    | 10s    | 다른 작업으로 락이 걸렸을 때 일정 시간이 지나면 포기 |
 
 
 
@@ -135,7 +139,7 @@ let db_path = format!("host={path} port={port} user={username} password={passwor
 파일 내부의 `@authmethodhost@` 처럼 `@`로 둘러쌓인 곳은 대체한다. 지워야 한다.
 
 ```
-# 로컬(유닉스 소켓) 접속: 모든 접속 허용
+# 로컬(유닉스 소켓) 접속: 모든 접속 허용 - 비번 넣을 경우 trust 도 scram-sha-256 로 변경
 local   all             all                                     trust
 # IPv4 루프백 접속
 host    all             all             127.0.0.1/32            scram-sha-256
