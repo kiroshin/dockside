@@ -17,6 +17,8 @@ services:
       - ./postgresql.conf:/etc/postgresql/postgresql.conf:ro
       - ./pg_hba.conf:/etc/postgresql/pg_hba.conf:ro
       # 소켓 통로 추가 (호스트의 /var/run/postgresql 사용)
+      # 그러나 이걸로 충분하지 않다. 재부팅되면 디렉토리 권한이 초기화된다.
+      # 따라서 systemd-tmpfiles 로 추가 작업을 해줘야 한다.
       - /var/run/postgresql:/var/run/postgresql
     # configs:
       # 설정 파일은 configs로 관리

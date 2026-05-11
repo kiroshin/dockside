@@ -80,6 +80,22 @@ unix_socket_permissions = 0777
 
 ```
 
+그러나 위 방법으로는 재부팅하면 권한이 초기화된다.
+```shell
+$ sudo nano /etc/tmpfiles.d/postgresql-socket.conf
+# 다음 한 줄 입려하고 저장
+# 이렇게 하면 재부팅 시마다 OS가 컨테이너보다 먼저 해당 디렉토리를 만들고 권한을 `999`로 세팅해준다.
+# d /var/run/postgresql 0775 999 999 - -
+# 의미: *   d: 디렉토리를 생성하라.
+#      *   0775: 권한을 부여하라.
+#      *   999 999: 소유자와 그룹을 999로 설정하라.
+
+```
+
+혹은 postgresql.conf 에서 소켓 경로를 램디스크로 관리되는 /var/run/ 말고 다른 영구 디스크를 지정해도 된다.
+디민 양구디스크에 있으면 프로그램이 비정상종료됐을 때 소켓파일을 못 지워서 재시작할 때 기존 소켓 때문에 에러날 수 있다.
+그래서 램디스크에 올리는 게 제일 깔끔하다.
+
 러스트 연결 설정
 ```rust
 // (TCP): postgres://user:password@localhost:5432/dbname
@@ -105,7 +121,7 @@ let db_path = format!("host={path} port={port} user={username} password={passwor
 ```
 
 
-## postgresql.conf 가이드
+## postgresql.conf 가이드 (자료양 100G 가정)
 
 | Key                             | 1GB   | 1.5GB  | 2GB    | 4GB    | 8GB    | **10GB** | 16GB | 24GB   | note  |
 | ------------------------------- | ----- | ------ | ------ | ------ | ------ | ------ | ------ | ------ | ----- |
@@ -200,6 +216,13 @@ tester_db=> INSERT INTO person (name, age, phone) VALUES ('tom', 20, '010-1234-5
 
 # 출력도 해봐
 tester_db=> SELECT * FROM person;
+
+#
+SELECT
+    datname AS database_name,
+    pg_size_pretty(pg_database_size(datname)) AS size
+FROM pg_database
+ORDER BY pg_database_size(datname) DESC;
 
 # ------------------------------------------------------------
 # DB 삭제
