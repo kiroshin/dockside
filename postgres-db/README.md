@@ -159,6 +159,9 @@ host    replication     all             127.0.0.1/32            scram-sha-256
 # 내부 접속
 $ docker exec -it postgres-db psql -U postgres
 
+# 관리자 비번변경
+postgres=# ALTER USER postgres WITH PASSWORD '새로운비밀번호';
+
 # 설정한 버퍼가 맞는지 확인
 postgres=# SHOW shared_buffers;
 
@@ -197,4 +200,17 @@ tester_db=> INSERT INTO person (name, age, phone) VALUES ('tom', 20, '010-1234-5
 
 # 출력도 해봐
 tester_db=> SELECT * FROM person;
+
+# ------------------------------------------------------------
+# DB 삭제
+postgres=# DROP DATABASE tester_db;
+# 누가 접속중이면 강제로 끊고 지워
+postgres=# SELECT pg_terminate_backend(pid) FROM pg_stat_activity WHERE datname = 'tester_db'; DROP DATABASE tester_db;
+# 유저 tester가 가진 모든 권한(테이블 소유권 등)을 강제 정리
+DROP OWNED BY tester;
+# 유저 삭제
+DROP USER tester;
+# 확인
+\du
+
 ```
