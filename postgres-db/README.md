@@ -76,6 +76,7 @@ $ sudo chmod -R 775 /var/run/postgresql
 # 또한 포스트그레가 Lock 을 만들게 되므로 디렉토리 권한에 예민하다. 따라서 전용 공간을 만드는 것이 좋다.
 # 이 소켓(.s.PGSQL.5432)은 PostgreSQL 재시작 시 지우고 다시 만들게 된다.
 unix_socket_directories = '/var/run/postgresql'
+unix_socket_permissions = 0777
 
 ```
 
