@@ -117,3 +117,34 @@ docker compose version
 # srv 디렉토리 소유 변경
 sudo chown $USER:$USER /srv
 ```
+
+## 로그 파일 제한
+```shell
+$ sudo nano /etc/docker/daemon.json
+```
+
+- max-size: 로그 파일 한 개가 10MB를 넘지 못하게
+- max-file: 파일 개수를 3개로 제한
+- 그래서 총 30MB 가 넘지 못하게 함
+
+```shell
+{
+  "log-driver": "json-file",
+  "log-opts": {
+    "max-size": "10m",
+    "max-file": "3"
+  }
+}
+```
+
+- 소급적용 안됨. 컨테이너 다시 만들어야 적용됨
+- 만약 특정 프로젝트의 docker-compose.yml에 직접 logging 옵션을 넣었다면 전역보다 지역 설정이 우선 적용 됨.
+
+```shell
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "50m"   # 로그 파일 하나당 50MB 제한
+        max-file: "3"     # 최대 3개 파일 유지 (총 150MB 수준)
+```
+

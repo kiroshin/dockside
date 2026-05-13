@@ -175,6 +175,9 @@ host    replication     all             127.0.0.1/32            scram-sha-256
 # 내부 접속
 $ docker exec -it postgres-db psql -U postgres
 
+# DB를 안전하게 끄려면 아래와 같이 하고 docker compose stop
+postgres=# CHECKPOINT;
+
 # 관리자 비번변경
 postgres=# ALTER USER postgres WITH PASSWORD '새로운비밀번호';
 
