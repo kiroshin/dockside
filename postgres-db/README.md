@@ -56,7 +56,7 @@ kiro@server:/srv$
 머신에는 999 유저가 없지만 999 그룹은 systemd-journal 이다. 따라서 위와 같이 표시된다. 정상이다.
 
 
-## 도커 내부 포스트그레와 통싱한 유닉스 소켓
+## 도커 내부 포스트그레와 통신할 유닉스 소켓
 ```shell
 # 호스트에 디렉트리 만들기
 $ sudo mkdir -p /var/run/postgresql
