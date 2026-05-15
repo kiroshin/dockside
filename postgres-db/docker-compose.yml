@@ -13,6 +13,8 @@ services:
     volumes:
       # 데이터는 볼륨으로 관리
       - /srv/pgdata:/var/lib/postgresql/data
+      # 백업 디렉토리 마운트
+      - /mnt/backup/pgbackup:/backups
       # 설정 파일은 이렇게 하면 주입(ro: reay only)되는데, 권한문제가 발생하면 configs 로 돌려라.
       - ./postgresql.conf:/etc/postgresql/postgresql.conf:ro
       - ./pg_hba.conf:/etc/postgresql/pg_hba.conf:ro
