@@ -83,7 +83,7 @@ unix_socket_permissions = 0777
 그러나 위 방법으로는 재부팅하면 권한이 초기화된다.
 ```shell
 $ sudo nano /etc/tmpfiles.d/postgresql-socket.conf
-# 다음 한 줄 입려하고 저장
+# 다음 한 줄 입력하고 저장
 # 이렇게 하면 재부팅 시마다 OS가 컨테이너보다 먼저 해당 디렉토리를 만들고 권한을 `999`로 세팅해준다.
 # d /var/run/postgresql 0775 999 999 - -
 # 의미: *   d: 디렉토리를 생성하라.
@@ -93,7 +93,7 @@ $ sudo nano /etc/tmpfiles.d/postgresql-socket.conf
 ```
 
 혹은 postgresql.conf 에서 소켓 경로를 램디스크로 관리되는 /var/run/ 말고 다른 영구 디스크를 지정해도 된다.
-디민 양구디스크에 있으면 프로그램이 비정상종료됐을 때 소켓파일을 못 지워서 재시작할 때 기존 소켓 때문에 에러날 수 있다.
+다만 영구디스크에 있으면 프로그램이 비정상종료됐을 때 소켓파일을 못 지워서 재시작할 때 기존 소켓 때문에 에러날 수 있다.
 그래서 램디스크에 올리는 게 제일 깔끔하다.
 
 러스트 연결 설정
@@ -104,14 +104,11 @@ $ sudo nano /etc/tmpfiles.d/postgresql-socket.conf
 // 문제는 중간에 퍼센트인코딩을 해야 한다는 것이다. / => "%2F"
 // URL 형식을 쓸 때 (인코딩 필요할 수 있음)
 let url = r#"postgres://postgres:password@/var%2Frun%2Fpostgresql/danbi"#;
-// Danbi 프로젝트에서 사용하실 설정 예시
+// 프로젝트에서 사용하실 설정 예시
 let conn_str = r#"host=/var/run/postgresql user=유저이름 password=패스워드 dbname=디비이름"#;
 
 // 결국 이렇게 하면 된다.
-let user = &config.db_user;
-let password = &config.db_password;
-let dbname = &config.db_name;
-let socket_path = "/var/run/postgresql"; // 유닉스 UDS 경로
+let path = "/var/run/postgresql"; // 유닉스 UDS 경로
 
 // format! 매크로로 연결 문자열 생성
 let db_path = format!("host={} port={} user={} password={} dbname={} sslmode=disable", path, port, username, password, dbname);
@@ -123,7 +120,7 @@ let db_path = format!("host={path} port={port} user={username} password={passwor
 
 ## postgresql.conf 가이드 (자료양 100G 가정)
 
-| Key                             | 1GB   | 1.5GB  | 2GB    | 4GB    | 8GB    | **10GB** | 16GB | 24GB   | note  |
+| Key                             | 1GB   | 1.5GB  | 2GB    | 4GB    | 8GB    | __10GB__ | 16GB | 24GB   | note  |
 | ------------------------------- | ----- | ------ | ------ | ------ | ------ | ------ | ------ | ------ | ----- |
 | listen_addresses                | *     | *      | *      | *      | *      |   *    | *      | *      | localhost 로 되어있다면 * 로 바꿔야 외부접속 됨 |
 | shared_buffers                  | 256MB | 384MB  | 512MB  | 1GB    | 2GB    | 2560MB | 4GB    | 6GB    | 전체 할당량의 25%. 자주 요청하는 데이터 |
@@ -157,6 +154,7 @@ let db_path = format!("host={path} port={port} user={username} password={passwor
 
 ```
 # 로컬(유닉스 소켓) 접속: 모든 접속 허용 - 비번 넣을 경우 trust 도 scram-sha-256 로 변경
+# 보안이 걱정되면 local 도 trust 가 아니라 scram-sha-256 로 해서 비번 넣고 들어간다.
 local   all             all                                     trust
 # IPv4 루프백 접속
 host    all             all             127.0.0.1/32            scram-sha-256
