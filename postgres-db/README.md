@@ -273,6 +273,12 @@ DROP USER tester;
 
 전체 humandb=> pg_dump -F t -f /backups/humandb_total.tar humandb
 전체 humandb=> pg_restore -c -d humandb /backups/humandb_total.tar
+
+도커밖으로 처리는 ==>>> $ docker exec -t postgres-db pg_dump -F t -U postgres humandb > /backups/humandb-2026-05-15.tar
+도커안에서 처리는 ==>>> $ docker exec -it postgres-db pg_dump -F t -U postgres -f /backups/humandb-2026-05-15.tar humandb
+
+잘 됐는지 스캔: 테이블 하나를 조회해본다. ==>>> $ docker exec -it postgres-db pg_restore -l /backups/humandb-2026-05-15.tar | grep person
+
 ```
 
 
