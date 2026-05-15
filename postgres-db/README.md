@@ -147,7 +147,7 @@ let db_path = format!("host={path} port={port} user={username} password={passwor
 | log_temp_files                  | 0     | 0      | 0      | 0      | 0      | 0      | 0      | 0      | 크기와 상관없이 디스크 캐시를 사용했다면 로그에 기록해 |
 | temp_file_limit                 | 25GB  | 25GB   | 25GB   | 25GB   | 25GB   | 50GB   | 50GB   | 50GB   | work_mem보다 큰 작업이 들어오면 DB는 디스크에 임시파일 만든다. 50% 정도 할당 |
 | statement_timeout               | 30s   | 30s    | 30s    | 30s    | 30s    | 30s    | 30s    | 30s    | 쿼리 하나가 너무 오래 걸리면 강제종료 |
-| temp_file_limit                 | 10s   | 10s    | 10s    | 10s    | 10s    | 10s    | 10s    | 10s    | 다른 작업으로 락이 걸렸을 때 일정 시간이 지나면 포기 |
+| lock_timeout                    | 10s   | 10s    | 10s    | 10s    | 10s    | 10s    | 10s    | 10s    | 다른 작업으로 락이 걸렸을 때 일정 시간이 지나면 포기 |
 
 
 
@@ -239,4 +239,41 @@ DROP USER tester;
 # 확인
 \du
 
+# ------------------------------------------------------------
+# 테이블 백업(pg_dump)
+#   -F d: 디렉토리(Directory) 만들어서 거기에 종류별로 풀어낸다.
+#   -F c : 커스텀 압축 파일 (.dump)
+#   -F t : 타르 압축 파일 (.tar) 복원은 pg_restore 로
+#   -j 숫자: 코어 숫자개를 동시에 써서 병렬로 백업
+#   -f 경로: 백업 데이터가 저장될 경로
+#   -d 디비: (생략가능)대상 데이터베이스
+#   => pg_dump -F d -j 4 -f /backups/dump_file -d humandb
+#   -t 테이블: 특정 테이블만 백업
+#   => pg_dump -t person -f ~/Desktop/person_dump_file.sql humandb
+#
+# 테이블 복원(psql)
+#   -d 디비: 대상 데이터베이스
+#   -f 경로: 백업 데이터가 저장될 경로
+#  => psql -d humandb -f ~/backups/person_dump_file.sql
+#
+# 테이블 복원(pg_restore)
+#   -c: (Clean)기존 테이블을 자동으로 드롭한 뒤 복원
+#   -d 디비명: 복원할 데이터베이스
+# ------------------------------------------------------------
+# 전체 백업(pg_dumpall)
+#   => pg_dumpall -f ~/backups/humandb_backup.sql -d humandb
+#   => pg_dump -F d -j 4 -f ~/backups/humandb_dir_backup -d humandb
+#
+# 전체 복원
+#   => psql -f ~/backups/humandb_backup.sql humandb
+#   => pg_restore -c -j 4 -d humandb ~/backups/humandb_dir_backup
+# ------------------------------------------------------------
+부분 humandb=> pg_dump -F t -t person -f ~/backups/2026-01-01-humandb-person.tar humandb
+부분 humandb=> pg_restore -c -d humandb ~/backups/2026-01-01-humandb-person.tar
+
+전체 humandb=> pg_dump -F t -f /backups/humandb_total.tar humandb
+전체 humandb=> pg_restore -c -d humandb /backups/humandb_total.tar
 ```
+
+
+
