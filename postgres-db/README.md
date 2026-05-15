@@ -61,7 +61,7 @@ kiro@server:/srv$
 # 호스트에 디렉트리 만들기
 $ sudo mkdir -p /var/run/postgresql
 
-# 권한 부여 (999는 postgres 이미지의 기본 UID입니다)
+# 권한 부여 (999는 postgres 이미지의 기본 UID)
 # 이 디렉토리에서 컨테이너 내부의 postgres 유저가 소켓 파일을 생성하게 된다.
 $ sudo chown -R 999:999 /var/run/postgresql
 
