@@ -4,65 +4,122 @@
 다만, java 나 node.js 는 구동 목적에 따라 따로 컨테이너 두는 게 낫다.
 
 ## 소스편집
-- `nano` 또는 `vim` : 파일 편집
-- `git git-lfs`: 소스관리 깃
-  * 반드시 `$ git lfs install` 로 한 번은 초기화 해줘야 한다.
-- `curl` 또는 `wget` : 다운로드 도구
+```
+DEBIAN             | REAHAT
+---------------------------------------------------------
+nano vim           | nano vim                   : 파일 편집
+curl wget          | curl wget                  : 다운로드 도구
+git git-lfs        | git git-lfs                : 소스코드 =>? 반드시 `git lfs install` 로 한 번은 초기화 해줘야 한다.
+
+
+```
 
 
 ## 개발툴
-- `build-essential`: 기본 컴파일러 묶음
-- `python3-dev` : 파이썬 C 확장모듈 헤더
-- `python3-pip` : 파이썬 패키지 매니저
-- `python3-venv` : 파이썬 가상환경
-- `curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh` : 러스트 컴파일러
-- `cmake` : 이건 C++ 빌드할 때
-- `gdb` : 디버거
+```
+DEBIAN             | REAHAT
+---------------------------------------------------------
+sudo apt install     sudo dnf groupinstall
+build-essential -y | "Development Tools" -y    : 개발도구묶음
 
+
+python3-dev        | python3-devel             : 파이썬 C 확장모듈 헤더
+python3-pip        | python3-pip               : 패키지 매니저
+python3-venv       | -                         : 가상환경(레드햇은 기본설치 됨)
+cmake              | cmake
+gdb                | gdb
+
+
+---------------------------------------------------------
+NODE.JS : 공통 - 기본 개발툴 설치 후에 한다.
+---------------------------------------------------------
+curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
+
+```
 
 ## 시스템 라이브러리
-- `libxml2-dev` : xml 파싱 라이브러리
-- `libssl-dev` : SSL/TLS 암호화 라이브러리. 통신쪽 개발에 쓴다.
-- `libffi-dev` : C인터페이스 브릿지
-- `libaio1t64` : 비동기 입출력 사용에 쓰는데, 개발에 쓰려면 `libaio-dev` 를 더 설치
-  * 고집쟁이 오라클이 인식할 수 있게 심볼릭 만들어줘야 해. `libaio.so.1` 를 찾으니까.
-  * `$ sudo ln -s /usr/lib/x86_64-linux-gnu/libaio.so.1t64 /usr/lib/x86_64-linux-gnu/libaio.so.1`
-  * 이건 경로로 직접 들어가서 `$ ls -l libaio*.*` 로 직접 확인해보고 나서 `$ sudo ln -s libaio.so.1t64 libaio.so.1` 하는 게 안전.
-  * 왜냐면 arm 계열은 `ln -s /usr/lib/aarch64-linux-gnu/libaio.so.1t64 /usr/lib/aarch64-linux-gnu/libaio.so.1` 니까.
+```
+DEBIAN             | REAHAT
+---------------------------------------------------------
+libxml2-dev        | libxml2-devel            : xml 파싱
+libssl-dev         | openssl-devel            : SSL/TLS 암호화
+libffi-dev         | libffi-devel             : C인터페이스 브릿지
 
+libaio-dev         | libaio-devel             : [x] 비동기 입출력 개발
+libaio1t64         | libaio                   : [o] 비동기 입출력 사용
+ └─ * 오라클이 인식할 수 있게 심볼릭 만들어줘야 해. `libaio.so.1` 를 찾으니까.
+    * `$ sudo ln -s /usr/lib/x86_64-linux-gnu/libaio.so.1t64 /usr/lib/x86_64-linux-gnu/libaio.so.1`
+    * 이건 경로로 직접 들어가서 `$ ls -l libaio*.*` 로 직접 확인해보고 나서 `$ sudo ln -s libaio.so.1t64 libaio.so.1` 하는 게 안전.
+    * 왜냐면 arm 계열은 `ln -s /usr/lib/aarch64-linux-gnu/libaio.so.1t64 /usr/lib/aarch64-linux-gnu/libaio.so.1` 니까.
+```
 
 ## 데이터
-- `pkg-config` : 종종 패키지 찾는다고 이걸 요구하는 경우가 있음
-- `ca-certificates` :  신뢰할 수 있는 기관 인증서 모음
-- `gnupg` : 인증 확인 툴
-- `protobuf-compiler` : grpc 를 위한 프로토콜 버퍼. `protoc` 호출
-- `unzip` : 압축풀기
+```
+DEBIAN             | REAHAT
+---------------------------------------------------------
+pkg-config         | pkgconfig                : 패키지 경로
+ca-certificates    | ca-certificates          : 기관 인증서 모음
+gnupg              | gnupg2                   : 인증확인 툴
+protobuf-compiler  | protobuf-compiler        : 프로토콜 버퍼
+unzip              | unzip                    : 압축풀기
 
+
+```
 
 ## 모니터링
-- `cron` : 크론탭 스케쥴러
-- `htop` : 그냥 top 보다는 조금 더 보기 편해
+```
+DEBIAN             | REAHAT
+---------------------------------------------------------
+cron               | cronie                  : 크론 스캐쥴러
+htop               | htop (확장저장소 먼저 인스톨 확장저장소 epel-release -y 하고 설치해야 함)
+                      └─ sudo dnf install epel-release -y
+                      └─ sudo dnf config-manager --enable ol9_developer_EPEL (오라클리눅스면 활성화해야 한다)
+                      └─ sudo dnf clean all
+```
 
 
 ## 방화벽
-- `ufw` : iptables 상위 래퍼
-
+```
+DEBIAN             | REAHAT
+---------------------------------------------------------
+ufw : iptables 상위 래퍼이고 간단하긴 한데 자주 꼬이더라. 그래서 안쓴다.
+레드햇은 firewalld 로 기본설치. 이거 좋다.
+```
 
 ## 그외 지저분한 녀석들
-- `openjdk-17-jdk` : 자바17
-  * amd64 환경변수 `~/.bashrc` 에 추가. 이런 건 직접 경로를 확인해보고 넣는 게 좋다.
-    1. `export JAVA_HOME=/usr/lib/jvm/java-17-openjdk-amd64`
-    2. `export PATH=$PATH:$JAVA_HOME/bin`
-  * arm 환경변수 - 이름이 살짝 다르다
-    1. `export JAVA_HOME=/usr/lib/jvm/java-17-openjdk-arm64`
-    2. `export PATH=$PATH:$JAVA_HOME/bin`
-  * 그리고 `source ~/.bashrc` 로 로딩
-- node.js 는 apt 로 설치하면 매우 낮은 버전이 깔린다. 24LTS 를 설치하려면 다음처럼.
-  * nvm 다운로드 : `curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.40.1/install.sh | bash`
-  * node.js 설치 : `nvm install 24`
-  * 확인
-    1. `node -v`
-    2. `nvm current`
+```
+---------------------------------------------------------
+DEBIAN: openjdk-17-jdk
+---------------------------------------------------------
+* amd64 환경변수 `~/.bashrc` 에 추가. 이런 건 직접 경로를 확인해보고 넣는 게 좋다.
+  1. `export JAVA_HOME=/usr/lib/jvm/java-17-openjdk-amd64`
+  2. `export PATH=$PATH:$JAVA_HOME/bin`
+* arm 환경변수 - 이름이 살짝 다르다
+  1. `export JAVA_HOME=/usr/lib/jvm/java-17-openjdk-arm64`
+  2. `export PATH=$PATH:$JAVA_HOME/bin`
+* 그리고 `source ~/.bashrc` 로 로딩
+
+---------------------------------------------------------
+REAHAT: java-17-openjdk-devel
+---------------------------------------------------------
+* AMD64
+export JAVA_HOME=/usr/lib/jvm/java-17-openjdk
+export PATH=$PATH:$JAVA_HOME/bin
+* ARM64
+export JAVA_HOME=/usr/lib/jvm/java-17-openjdk
+export PATH=$PATH:$JAVA_HOME/bin
+
+
+
+---------------------------------------------------------
+NODE.JS : 공통 - 24LTS
+---------------------------------------------------------
+* nvm 다운로드 : `curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.40.1/install.sh | bash`
+* node.js 설치 : `nvm install 24`
+* 확인
+  1. `node -v`
+  2. `nvm current`
+```
 
 
 ## SSH 인증서(ed25519)

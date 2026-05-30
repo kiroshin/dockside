@@ -4,9 +4,11 @@ services:
     container_name: postgres-db
     user: "999:999"
     restart: unless-stopped
-    ports:
+    # 포트 직결
+    network_mode: "host"
+    # ports:
       # 물리 서버와 포트 연결
-      - "5432:5432"
+      # - "5432:5432"
     environment:
       # 초기 비번은 0000
       POSTGRES_PASSWORD: "0000"
@@ -22,8 +24,15 @@ services:
       # 그러나 이걸로 충분하지 않다. 재부팅되면 디렉토리 권한이 초기화된다.
       # 따라서 systemd-tmpfiles 로 추가 작업을 해줘야 한다.
       - /var/run/postgresql:/var/run/postgresql
+    ########## 레드햇 계열에서는 SELinux 때문에 :Z 플래그 붙여야 한다. ##########
+    # volumes:
+    #   - /srv/pgdata:/var/lib/postgresql/data:Z
+    #   - /mnt/backup/pgbackup:/backups:Z
+    #   - ./postgresql.conf:/etc/postgresql/postgresql.conf:ro,z
+    #   - ./pg_hba.conf:/etc/postgresql/pg_hba.conf:ro,z
+    #   - /var/run/postgresql:/var/run/postgresql:Z
+    ########## 설정 파일은 configs로 관리 ##########
     # configs:
-      # 설정 파일은 configs로 관리
       # - source: pg_conf
       #   target: /etc/postgresql/postgresql.conf
       # - source: pg_hba
@@ -33,7 +42,7 @@ services:
       "-c", "config_file=/etc/postgresql/postgresql.conf",
       "-c", "hba_file=/etc/postgresql/pg_hba.conf"
     ]
-    # 공유메모리 : 도커의 기본값(64Mb)이 너무 작음.
+    ########## 공유메모리 : 도커의 기본값(64Mb)이 너무 작음. ##########
     #   df -h /dev/shm 해보면 tmpfs 라는 파일이 보이는데 이건 파일처럼 보이지만 실제 메모리 주소이다.
     #   리눅스는 일반적으로 프로세스간 공유 메모리를 물리메모리의 절반정도로 자동으로 잡아둔다.
     #   하지만 도커는 어림없다. 자원을 소진해버릴 수 있으므로 최소로 잡아두고 있는데,
@@ -41,6 +50,12 @@ services:
     #   보통 shared_buffers 의 2배로 잡아 명시한다. 잡아두고 사용하지 않으면 전체 점유량에 포함되지는 않는다.
     # shm_size: '512mb'
     shm_size: '4gb'
+    ########## 동시 오픈 파일제한 해제 ##########
+    ulimits:
+      nofile:
+        soft: 65536
+        hard: 65536
+    ########## 그외 설정 ##########
     deploy:
       resources:
         limits:
