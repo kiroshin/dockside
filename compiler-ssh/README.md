@@ -17,15 +17,16 @@ git git-lfs        | git git-lfs                : 소스코드 =>? 반드시 `gi
 
 ## 개발툴
 ```
-DEBIAN             | REAHAT
----------------------------------------------------------
-sudo apt install     sudo dnf groupinstall
-build-essential -y | "Development Tools" -y    : 개발도구묶음
+# 개발도구묶음
+DEBIAN: sudo apt install build-essential -y
+REAHAT: sudo dnf groupinstall "Development Tools" -y
 
-
+# 파이썬
 python3-dev        | python3-devel             : 파이썬 C 확장모듈 헤더
 python3-pip        | python3-pip               : 패키지 매니저
 python3-venv       | -                         : 가상환경(레드햇은 기본설치 됨)
+
+# 그외
 cmake              | cmake
 gdb                | gdb
 
@@ -47,10 +48,12 @@ libffi-dev         | libffi-devel             : C인터페이스 브릿지
 
 libaio-dev         | libaio-devel             : [x] 비동기 입출력 개발
 libaio1t64         | libaio                   : [o] 비동기 입출력 사용
- └─ * 오라클이 인식할 수 있게 심볼릭 만들어줘야 해. `libaio.so.1` 를 찾으니까.
+ └─ * [DEBIAN] 오라클이 인식할 수 있게 심볼릭 만들어줘야 해. `libaio.so.1` 를 찾으니까.
     * `$ sudo ln -s /usr/lib/x86_64-linux-gnu/libaio.so.1t64 /usr/lib/x86_64-linux-gnu/libaio.so.1`
     * 이건 경로로 직접 들어가서 `$ ls -l libaio*.*` 로 직접 확인해보고 나서 `$ sudo ln -s libaio.so.1t64 libaio.so.1` 하는 게 안전.
     * 왜냐면 arm 계열은 `ln -s /usr/lib/aarch64-linux-gnu/libaio.so.1t64 /usr/lib/aarch64-linux-gnu/libaio.so.1` 니까.
+└─ * [REAHAT] 경로가 달라. `/usr/lib64/` 에 있어.
+
 ```
 
 ## 데이터
@@ -60,9 +63,12 @@ DEBIAN             | REAHAT
 pkg-config         | pkgconfig                : 패키지 경로
 ca-certificates    | ca-certificates          : 기관 인증서 모음
 gnupg              | gnupg2                   : 인증확인 툴
-protobuf-compiler  | protobuf-compiler        : 프로토콜 버퍼
 unzip              | unzip                    : 압축풀기
 
+protobuf-compiler  | protobuf-compiler        : 프로토콜 버퍼
+                      └─ * [Rocky Linux] sudo dnf config-manager --set-enabled crb
+                           [Oracle Linux] sudo dnf config-manager --set-enabled ol9_codeready_builder
+                         * [INSTALL] sudo dnf install protobuf-compiler
 
 ```
 

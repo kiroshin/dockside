@@ -57,7 +57,7 @@ docker compose logs -f              : 로그 실시간 출력
 ```
 
 
-## 설치
+## 설치(우분투)
 ```shell
 # -------------------------
 # ca-certificates          (증명서 보관함) - 도커 접속할 때, 그 서버가 신뢰할 수 있는 기관의 것인지 확인
@@ -117,6 +117,40 @@ docker compose version
 # srv 디렉토리 소유 변경
 sudo chown $USER:$USER /srv
 ```
+
+## 설치(레드햇)
+```shell
+# 1. 시스템 업데이트
+sudo dnf update -y
+
+# 2. 사전에 필요한 도구 설치 (저장소 관리 도구)
+sudo dnf install -y dnf-plugins-core
+
+# 도커 공식 RPM 저장소(Repository) 등록 - (RHEL 계열 통합 공용 centos 배포판 repo를 등록하는 것이 공식 매뉴얼 가이드입니다)
+sudo dnf config-manager --add-repo https://download.docker.com/linux/centos/docker-ce.repo
+
+# 도커 엔진 세트 및 플러그인 설치
+sudo dnf install -y docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin
+
+# 도커 서비스 시작 및 부팅 시 자동 시작 설정 (레드햇 계열 필수 단계)
+sudo systemctl enable --now docker
+
+# 권한 해결하기
+## 현재 사용자($USER)를 docker 그룹에 포함
+sudo usermod -aG docker $USER
+## 그룹 변경 사항을 현재 터미널 세션에 즉시 적용
+newgrp docker
+
+# 엔진과 CLI 버전 확인
+docker version
+
+# 컴포즈 플러그인 확인
+docker compose version
+
+# srv 디렉토리 소유 변경
+sudo chown $USER:$USER /srv
+```
+
 
 ## 로그 파일 제한
 ```shell
